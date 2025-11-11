@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+
+--font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 
+             'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+
+    --color-primary: #1E93AB;         /* Biru kehijauan */
+    --color-primary-light: #57B4C7;   /* Hover / highlight */
+    --color-primary-dark: #166D7D;    /* Dark mode / hover gelap */
+
+    --color-secondary: #DCDCDC;       /* Abu-abu netral */
+    --color-secondary-light: #F0F0F0; /* Background terang / hover */
+    --color-secondary-dark: #B0B0B0;  /* Dark mode / hover gelap */
+
+    --color-accent: #FFD700;          /* Emas / aksen */
+    --color-accent-light: #FFEB70;    /* Hover / highlight */
+    --color-accent-dark: #CCAA00;     /* Dark mode / aksen gelap */
+
+    --color-light: #F3F2EC;           /* Background utama terang */
+    --color-dark: #2A3335;            /* Teks utama gelap */
+
+    /* =======================
+       VARIASI TEKS
+       ======================= */
+    --color-dark-light: #4c4c4c;      /* Teks gelap lembut */
+    --color-gray: #888888;            /* Teks abu-abu sedang */
+    --color-gray-light: #BBBBBB;      /* Teks / border ringan */
+    --color-gray-dark: #E0E0E0;       /* Teks / border terang untuk dark mode */
+
+    /* =======================
+       BACKGROUND
+       ======================= */
+    --color-bg-card: #FFFFFF;         /* Card / konten */
+    --color-bg-card-dark: #1F1F2E;    /* Card dark mode */
+    --color-bg-section: #F8F8F8;      /* Section page */
+    --color-bg-section-dark: #12121A; /* Section dark mode */
+
+    /* =======================
+       STATUS / NOTIFIKASI
+       ======================= */
+    --color-success: #28A745;         /* Sukses / berhasil */
+    --color-warning: #FFC107;         /* Peringatan */
+    --color-error: #DC3545;           /* Error / gagal */
+
+    /* =======================
+       BORDER & SHADOW
+       ======================= */
+    --color-border: #E0E0E0;          /* Border / subtle */
+    --color-border-dark: #2A2A3D;     /* Border dark mode */
+    --color-shadow: rgba(0, 0, 0, 0.1);   /* Shadow ringan */
+    --color-shadow-dark: rgba(0, 0, 0, 0.5); /* Shadow dark mode */
+}
