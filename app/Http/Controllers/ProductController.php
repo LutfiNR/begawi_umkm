@@ -5,27 +5,50 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Arr;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+
 
 class ProductController extends Controller
 {
     /**
      * Menampilkan halaman katalog (semua produk & unggulan).
      */
-    public function index(): View
+    public function index(Request $request)
     {
         $semuaProduk = $this->getSemuaProduk();
 
-        // Ambil produk yang ditandai 'unggulan'
-        $produkUnggulan = array_filter($semuaProduk, function ($produk) {
-            return $produk['unggulan'] ?? false;
-        });
-        
-        // Siapkan link WA (asumsi dari layout)
+        // Filter by search
+        if ($request->search) {
+            $semuaProduk = array_filter($semuaProduk, fn($p) => str_contains(strtolower($p['nama']), strtolower($request->search)));
+        }
+
+        // Filter by kategori jika ada (opsional)
+        if ($request->kategori) {
+            $semuaProduk = array_filter($semuaProduk, fn($p) => ($p['kategori'] ?? '') == $request->kategori);
+        }
+
+        // Produk unggulan
+        $produkUnggulan = array_values(array_filter($semuaProduk, fn($p) => $p['unggulan'] ?? false));
+
+
+        // Pagination manual
+        $page = $request->get('page', 1);
+        $perPage = 6;
+        $collection = collect($semuaProduk);
+        $paginatedProduk = new LengthAwarePaginator(
+            $collection->forPage($page, $perPage),
+            $collection->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
         $linkWA = $this->getLinkWA();
 
         return view('product', [
-            'produkUnggulan' => (object) $produkUnggulan,
-            'semuaProduk' => (object) $semuaProduk,
+            'produkUnggulan' => $produkUnggulan,
+            'semuaProduk' => $paginatedProduk,
             'linkWA' => $linkWA
         ]);
     }
@@ -40,7 +63,7 @@ class ProductController extends Controller
         if (!$produk) {
             abort(404); // Tampilkan 404 jika produk tidak ada
         }
-        
+
         // Siapkan link WA (asumsi dari layout)
         $linkWA = $this->getLinkWA();
 
@@ -77,56 +100,30 @@ class ProductController extends Controller
      */
     private function getSemuaProduk(): array
     {
-        return [
-            1 => [
-                'id' => 1,
-                'nama' => 'Sneaker Putih "The Cloud"',
-                'harga' => 'Rp 450.000',
-                'gambar' => '/assets/produk/sneaker1-main.jpg',
-                'href' => '/product/1', // Link ke detail
-                'unggulan' => true,
-                'diskon'=> 10,
-                'label' => 'Best Seller',
-                'label_color' => 'bg-accent text-dark',
-                'stok' => 120,
-                'deskripsi' => '<p>Rasakan kenyamanan berjalan di atas awan dengan "The Cloud". Didesain untuk kenyamanan maksimal dengan sol empuk dan bahan breathable mesh.</p><p>Cocok untuk gaya kasual sehari-hari, gym, atau lari pagi.</p>',
+        $produk = [];
+
+        for ($i = 1; $i <= 17; $i++) {
+            $produk[$i] = [
+                'id' => $i,
+                'nama' => "Sneaker Model $i",
+                'harga' => (350000 + $i * 10000), // variasi harga
+                'gambar' => '/assets/Sneaker.png',
+                'unggulan' => $i % 3 === 0, // setiap 3 produk jadi unggulan
+                'diskon' => ($i % 4 === 0) ? (string) (5 * $i) : null, // diskon tiap 4 produk
+                'label' => ($i % 3 === 0) ? 'Best Seller' : (($i % 4 === 0) ? 'Diskon' : null),
+                'label_color' => ($i % 3 === 0) ? 'bg-accent text-dark' : (($i % 4 === 0) ? 'bg-red-500 text-white' : null),
+                'stok' => 50 + $i * 5,
+                'deskripsi' => "<p>Deskripsi produk Sneaker Model $i. Nyaman dan stylish untuk aktivitas sehari-hari.</p>",
                 'galeri_gambar' => [
-                    '/assets/produk/sneaker1-main.jpg',
-                    '/assets/produk/sneaker1-2.jpg',
-                    '/assets/produk/sneaker1-3.jpg',
-                ]
-            ],
-            2 => [
-                'id' => 2,
-                'nama' => 'High-Top "Urban Retro"',
-                'harga' => 'Rp 520.000',
-                'gambar' => '/assets/produk/sneaker2-main.jpg',
-                'href' => '/product/2',
-                'unggulan' => true,
-                'diskon'=> 20,
-                'label' => 'Diskon 10%',
-                'label_color' => 'bg-red-500 text-white',
-                'stok' => 85,
-                'deskripsi' => '<p>Gaya klasik 90-an kembali dengan "Urban Retro". Bahan kulit sintetis premium dengan aksen suede. Tampil beda dan klasik.</p>',
-                'galeri_gambar' => [
-                    '/assets/produk/sneaker2-main.jpg',
-                    '/assets/produk/sneaker2-2.jpg',
-                ]
-            ],
-            3 => [
-                'id' => 3,
-                'nama' => 'Running "Velocity"',
-                'harga' => 'Rp 380.000',
-                'gambar' => '/assets/produk/sneaker3-main.jpg',
-                'href' => '/product/3',
-                'unggulan' => false,
-                'diskon'=> null,
-                'stok' => 150,
-                'deskripsi' => '<p>Didesain untuk kecepatan. "Velocity" sangat ringan dan responsif, membantu Anda mencapai performa lari terbaik.</p>',
-                'galeri_gambar' => [
-                    '/assets/produk/sneaker3-main.jpg',
-                ]
-            ],
-        ];
+                    '/assets/Sneaker.png',
+                    '/assets/Sneaker.png',
+                    '/assets/Sneaker.png',
+                    '/assets/Sneaker.png',
+                ],
+            ];
+        }
+
+        return $produk;
     }
+
 }

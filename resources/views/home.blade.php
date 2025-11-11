@@ -48,12 +48,17 @@
                 @foreach($produkPopuler as $produk)
                     <div class="bg-white dark:bg-dark rounded-lg md:rounded-xl shadow-md overflow-hidden border-2 border-gray-100 dark:border-gray-700
                         transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                        <img src="{{ $produk->gambar }}" alt="{{ $produk->nama }}" class="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <img src="{{ $produk['gambar'] }}" alt="{{ $produk['nama'] }}" class="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="p-3 md:p-6">
-                            <h3 class="text-md md:text-lg font-semibold text-dark dark:text-white truncate">{{ $produk->nama }}</h3>
-                            <p class="text-md md:text-lg text-dark dark:text-white font-bold mt-1">{{ $produk->harga }}</p>
-                            <a href="#" class="text-sm md:text-md mt-4 inline-block text-primary dark:text-primary-light hover:text-primary-dark hover:dark:text-primary font-medium">
-                                Lihat Detail &rarr;
+                            <h3 class="text-md md:text-lg font-semibold text-dark dark:text-white truncate">{{ $produk['nama'] }}</h3>
+                            <p class="text-md md:text-lg text-dark dark:text-white font-bold mt-1">
+                                {{ 'Rp ' . number_format($produk['harga'], 0, ',', '.') }}
+                            </p>
+
+                            {{-- Tombol lihat detail --}}
+                            <a href="/product/{{ $produk['id'] }}" 
+                               class="w-full block bg-accent mt-4 text-xs md:text-md text-dark p-2 md:p-2 text-center rounded hover:opacity-80 font-medium transition">
+                                Lihat Detail
                             </a>
                         </div>
                     </div>
