@@ -16,21 +16,21 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $semuaProduk = $this->getSemuaProduk();
+        $allProducts = $this->getSemuaProduk(); // Semua produk asli
+        $semuaProduk = $allProducts;
 
-        // Filter by search
+        // Produk unggulan selalu dari semua produk asli
+        $produkUnggulan = array_values(array_filter($allProducts, fn($p) => $p['unggulan'] ?? false));
+
+        // Filter search
         if ($request->search) {
             $semuaProduk = array_filter($semuaProduk, fn($p) => str_contains(strtolower($p['nama']), strtolower($request->search)));
         }
 
-        // Filter by kategori jika ada (opsional)
+        // Filter kategori
         if ($request->kategori) {
             $semuaProduk = array_filter($semuaProduk, fn($p) => ($p['kategori'] ?? '') == $request->kategori);
         }
-
-        // Produk unggulan
-        $produkUnggulan = array_values(array_filter($semuaProduk, fn($p) => $p['unggulan'] ?? false));
-
 
         // Pagination manual
         $page = $request->get('page', 1);
