@@ -1,4 +1,5 @@
-<x-layout :linkWA="$linkWA">
+<x-layout :linkWA="$linkWA" :socials="$socials">
+
 
     {{-- Judul Halaman --}}
     <x-slot:title>
@@ -33,7 +34,7 @@
     {{-- Konten utama --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        {{-- Produk Populer --}}
+        {{-- Produk Unggulan --}}
         <section class="mb-16">
             <div class="flex justify-between items-end md:px-4 mb-6">
                 <h2 class="text-xl md:text-3xl font-bold text-center text-dark dark:text-white">
@@ -45,7 +46,40 @@
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach($produkPopuler as $produk)
+                @foreach($produkUnggulan as $produk)
+                    <div class="bg-white dark:bg-dark rounded-lg md:rounded-xl shadow-md overflow-hidden border-2 border-gray-100 dark:border-gray-700
+                        transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                        <img src="{{ $produk['gambar'] }}" alt="{{ $produk['nama'] }}" class="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="p-3 md:p-6">
+                            <h3 class="text-md md:text-lg font-semibold text-dark dark:text-white truncate">{{ $produk['nama'] }}</h3>
+                            <p class="text-md md:text-lg text-dark dark:text-white font-bold mt-1">
+                                {{ 'Rp ' . number_format($produk['harga'], 0, ',', '.') }}
+                            </p>
+
+                            {{-- Tombol lihat detail --}}
+                            <a href="/product/{{ $produk['id'] }}" 
+                               class="w-full block bg-accent mt-4 text-xs md:text-md text-dark p-2 md:p-2 text-center rounded hover:opacity-80 font-medium transition">
+                                Lihat Detail
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        {{-- Produk Terbaru --}}
+        <section class="mb-16">
+            <div class="flex justify-between items-end md:px-4 mb-6">
+                <h2 class="text-xl md:text-3xl font-bold text-center text-dark dark:text-white">
+                    🆕 Produk Terbaru
+                </h2>
+                <a href="/product" class="text-sm md:text-md font-semibold text-primary dark:text-primary-light hover:text-primary-dark hover:dark:text-primary mr-2">
+                    Lihat Semua &rarr;
+                </a>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                @foreach($produkTerbaru as $produk)
                     <div class="bg-white dark:bg-dark rounded-lg md:rounded-xl shadow-md overflow-hidden border-2 border-gray-100 dark:border-gray-700
                         transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                         <img src="{{ $produk['gambar'] }}" alt="{{ $produk['nama'] }}" class="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-110">

@@ -34,7 +34,7 @@ class ProductController extends Controller
 
         // Pagination manual
         $page = $request->get('page', 1);
-        $perPage = 6;
+        $perPage = 8;
         $collection = collect($semuaProduk);
         $paginatedProduk = new LengthAwarePaginator(
             $collection->forPage($page, $perPage),
@@ -45,11 +45,17 @@ class ProductController extends Controller
         );
 
         $linkWA = $this->getLinkWA();
+        $socials = [
+            'instagram' => 'https://instagram.com/umkm',
+            'facebook' => 'https://facebook.com/umkm',
+            'tiktok' => 'https://tiktok.com/@umkm',
+        ];
 
         return view('product', [
             'produkUnggulan' => $produkUnggulan,
             'semuaProduk' => $paginatedProduk,
-            'linkWA' => $linkWA
+            'linkWA' => $linkWA,
+            'socials' => $socials
         ]);
     }
 
@@ -66,11 +72,18 @@ class ProductController extends Controller
 
         // Siapkan link WA (asumsi dari layout)
         $linkWA = $this->getLinkWA();
+        $socials = [
+            'instagram' => 'https://instagram.com/umkm',
+            'facebook' => 'https://facebook.com/umkm',
+            'tiktok' => 'https://tiktok.com/@umkm',
+        ];
 
         return view('product-detail', [
             'produk' => (object) $produk,
-            'linkWA' => $linkWA
+            'linkWA' => $linkWA,
+            'socials' => $socials
         ]);
+        
     }
 
     // --- DATABASE TIRUAN ---

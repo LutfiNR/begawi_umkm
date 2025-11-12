@@ -1,4 +1,4 @@
-<x-layout :linkWA="$linkWA">
+<x-layout :linkWA="$linkWA" :socials="$socials">
     <x-slot:title>
         Tentang Kami
     </x-slot:title>

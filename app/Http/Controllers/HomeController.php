@@ -10,81 +10,81 @@ class HomeController extends Controller
     /**
      * Menampilkan halaman beranda.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        // Produk Populer dengan struktur yang sama seperti ProductController
-        $produkPopuler = [
-            [
-                'id' => 1,
-                'nama' => "Sneaker Populer 1",
-                'harga' => 350000,
-                'gambar' => '/assets/Sneaker.png',
-                'unggulan' => true,
-                'diskon' => '10',
-                'label' => 'Best Seller',
-                'label_color' => 'bg-accent text-dark',
-                'stok' => 60,
-                'deskripsi' => "<p>Deskripsi Sneaker Populer 1. Nyaman dan stylish.</p>",
-                'galeri_gambar' => [
-                    '/assets/Sneaker.png',
-                    '/assets/Sneaker.png',
-                ],
-            ],
-            [
-                'id' => 2,
-                'nama' => "Sneaker Populer 2",
-                'harga' => 375000,
-                'gambar' => '/assets/Sneaker.png',
-                'unggulan' => false,
-                'diskon' => null,
-                'label' => null,
-                'label_color' => null,
-                'stok' => 55,
-                'deskripsi' => "<p>Deskripsi Sneaker Populer 2. Cocok untuk aktivitas outdoor.</p>",
-                'galeri_gambar' => [
-                    '/assets/Sneaker.png',
-                    '/assets/Sneaker.png',
-                ],
-            ],
-            [
-                'id' => 3,
-                'nama' => "Sneaker Populer 3",
-                'harga' => 390000,
-                'gambar' => '/assets/Sneaker.png',
-                'unggulan' => true,
-                'diskon' => '15',
-                'label' => 'Diskon',
-                'label_color' => 'bg-red-500 text-white',
-                'stok' => 70,
-                'deskripsi' => "<p>Deskripsi Sneaker Populer 3. Ringan dan empuk.</p>",
-                'galeri_gambar' => [
-                    '/assets/Sneaker.png',
-                    '/assets/Sneaker.png',
-                ],
-            ],
-            [
-                'id' => 4,
-                'nama' => "Sneaker Populer 4",
-                'harga' => 420000,
-                'gambar' => '/assets/Sneaker.png',
-                'unggulan' => false,
-                'diskon' => null,
-                'label' => null,
-                'label_color' => null,
-                'stok' => 52,
-                'deskripsi' => "<p>Deskripsi Sneaker Populer 4. Desain modern dan elegan.</p>",
-                'galeri_gambar' => [
-                    '/assets/Sneaker.png',
-                    '/assets/Sneaker.png',
-                ],
-            ],
+        // Semua produk (database tiruan)
+        $allProducts = $this->getSemuaProduk();
+
+        // Produk unggulan (unggulan == true)
+        $produkUnggulan = array_values(array_filter($allProducts, fn($p) => $p['unggulan'] ?? false));
+
+        // Produk terbaru (4 terakhir dari daftar)
+        $produkTerbaru = array_slice(array_reverse($allProducts), 0, 4);
+
+        // Filter search
+        $semuaProduk = $allProducts;
+        if ($request->search) {
+            $semuaProduk = array_filter($semuaProduk, fn($p) => str_contains(strtolower($p['nama']), strtolower($request->search)));
+        }
+
+        // Filter kategori
+        if ($request->kategori) {
+            $semuaProduk = array_filter($semuaProduk, fn($p) => ($p['kategori'] ?? '') == $request->kategori);
+        }
+
+        $linkWA = $this->getLinkWA();
+        $socials = [
+            'instagram' => 'https://instagram.com/umkm',
+            'facebook' => 'https://facebook.com/umkm',
+            'tiktok' => 'https://tiktok.com/@umkm',
         ];
 
-        // Link WA
-        $nomorWA = '6281234567890';
-        $pesanOtomatis = urlencode("Halo, saya tertarik dengan produk Anda yang ada di website.");
-        $linkWA = "https://wa.me/{$nomorWA}?text={$pesanOtomatis}";
+        return view('home', [
+            'produkUnggulan' => $produkUnggulan,
+            'produkTerbaru' => $produkTerbaru,
+            'semuaProduk' => $semuaProduk,
+            'linkWA' => $linkWA,
+            'socials'=> $socials,
+        ]);
+    }
 
-        return view('home', compact('produkPopuler', 'linkWA'));
+    /**
+     * Membuat link WhatsApp dinamis.
+     */
+    private function getLinkWA(string $pesan = "Halo, saya tertarik dengan produk Anda."): string
+    {
+        $nomorWA = '6281234567890'; // Ganti dengan nomor Anda
+        $pesanOtomatis = urlencode($pesan);
+        return "https://wa.me/{$nomorWA}?text={$pesanOtomatis}";
+    }
+
+    /**
+     * Data master semua produk (database tiruan).
+     */
+    private function getSemuaProduk(): array
+    {
+        $produk = [];
+
+        for ($i = 1; $i <= 17; $i++) {
+            $produk[$i] = [
+                'id' => $i,
+                'nama' => "Sneaker Model $i",
+                'harga' => (350000 + $i * 10000),
+                'gambar' => '/assets/Sneaker.png',
+                'unggulan' => $i % 3 === 0, // setiap 3 produk jadi unggulan
+                'diskon' => ($i % 4 === 0) ? (string)(5 * $i) : null, // diskon tiap 4 produk
+                'kategori' => 'kat' . (($i % 3) + 1),
+                'stok' => 50 + $i * 5,
+                'deskripsi' => "<p>Deskripsi produk Sneaker Model $i. Nyaman dan stylish untuk aktivitas sehari-hari.</p>",
+                'galeri_gambar' => [
+                    '/assets/Sneaker.png',
+                    '/assets/Sneaker.png',
+                    '/assets/Sneaker.png',
+                    '/assets/Sneaker.png',
+                ],
+            ];
+        }
+
+        return $produk;
     }
 }
